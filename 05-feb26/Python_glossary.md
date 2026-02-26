@@ -95,6 +95,8 @@ These work on numbers at the **binary (0s and 1s)** level. Less common for begin
 | `<<` | Left Shift | Shifts bits left (doubles the value) | `2 << 1` | `4` |
 | `>>` | Right Shift | Shifts bits right (halves the value) | `4 >> 1` | `2` |
 
+![Quake III - Fast Inverse Sqrt](fast_inverse_sqrt_yt.png)
+
 ---
 
 ## 🔲 Types of Brackets
