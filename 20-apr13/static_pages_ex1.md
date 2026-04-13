@@ -15,9 +15,9 @@ Submit repo with markdown file with blocks of code for:
 
 Include screenshots for every page.
 
-Use only django.http.HttpResponse, for every page add any of these data(include name and values for every element using f strings with ol or ul):
+Use only django.http.HttpResponse, for every page add any of these data (include name and values for every element using f strings with ol or ul tags):
 
-* 3 variables with different  data type
+* 3 variables with different data types
 * a list of mixed data types of length 6
 * a dictionary with string keys and different data types of length 5
 
