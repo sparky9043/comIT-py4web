@@ -1,4 +1,4 @@
-# Stattic pages with templates and static files
+# Static pages with templates and static files
 
 Create 4 webpages with templates (4 + 1 base template), for every page use a different DaisyUI theme.
 
