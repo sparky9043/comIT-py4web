@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-t05%doc&*5v0^ks0ac@ttu(chc31)1jn+wnj&k$z$%+kmsd)ex'
+SECRET_KEY = 'django-insecure-apmfttafff#al5l%$+65!%w-(%b*wa^r75&ds=d!0acf^yr)mo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'stat_pgs_tmpl',
     'accounts',
 ]
 
@@ -55,7 +56,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates' / 'accounts'],
+        'DIRS': [BASE_DIR / 'templates' / 'accounts', BASE_DIR / 'templates' / 'stat_pgs_tmpl'], # mofied
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -115,7 +116,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/' # modified 
+
+STATICFILES_DIRS = [   # added
+    BASE_DIR / "static",
+]
 
 # login path
 
