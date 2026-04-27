@@ -311,21 +311,7 @@ This is the single-page template. HTMX is loaded from CDN — no other assets ne
 
 ---
 
-## 7. HTMX CSRF Setup
-
-Django requires CSRF tokens for POST/DELETE requests. HTMX needs a small script to attach the token automatically. Add this inside `<head>` in `index.html`, after the HTMX script tag:
-
-```html
-<script>
-    document.body.addEventListener('htmx:configRequest', function(evt) {
-        evt.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-    });
-</script>
-```
-
----
-
-## 8. Run the App
+## 7. Run the App
 
 ```bash
 python manage.py runserver
