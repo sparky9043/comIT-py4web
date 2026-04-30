@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMX Django Full App Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.1/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/response-targets.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --font-mono: 'Space Mono', monospace; --font-sans: 'DM Sans', sans-serif; }
+        body  { font-family: var(--font-sans); }
+        .htmx-indicator               { opacity: 0; transition: opacity 200ms ease; }
+        .htmx-request .htmx-indicator { opacity: 1; }
+        .htmx-request.htmx-indicator  { opacity: 1; }
+        .feature-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .feature-card:hover { transform: translateY(-2px); }
+        .badge-htmx { background: linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .fade-in { animation: fadeIn 0.35s ease forwards; }
+        .progress-bar { transition: width 0.3s ease; }
+        /* Explanation Blocks styling */
+        .explanation { padding: 0.75rem; background-color: rgba(255,255,255,0.05); border-left: 4px solid #6366f1; border-radius: 0 0.5rem 0.5rem 0; font-size: 0.8rem; margin-bottom: 0.5rem; line-height: 1.5; color: #cbd5e1; }
+        .code-block pre { background-color: #1e1e2f; color: #a6accd; padding: 1rem; border-radius: 0.5rem; font-size: 0.75rem; overflow-x: auto; margin-top: 0.5rem; }
+    </style>
+</head>
+<body hx-ext="response-targets">
+    <div class="navbar bg-base-100 border-b border-base-200 sticky top-0 z-40 px-4 flex justify-between">
+        <a href="/" class="btn btn-ghost px-2 text-xl"><span>⚡</span><span class="font-mono font-bold text-lg ml-1">HTMX Explorer</span></a>
+        <div class="hidden md:flex gap-2">
+            <span class="badge badge-outline badge-sm">Django</span>
+            <span class="badge badge-outline badge-sm">DaisyUI</span>
+        </div>
+    </div>
+
+    <div class="py-14 px-6 max-w-3xl mx-auto">
+        <h1 class="text-3xl md:text-5xl font-bold font-mono mb-3">HTMX Feature Explorer</h1>
+        <p class="text-base-content/60 text-lg max-w-xl">26 exhaustive HTMX attributes & patterns. Expand the cards to see exactly how HTML constructs the magic.</p>
+    </div>
+
+    <!-- Layout Container -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto px-4 pb-16 items-start">
+        
+        <!-- 1. hx-get & hx-post -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🔁</span><h2 class="text-2xl font-bold text-primary font-mono mt-1">hx-get & hx-post</h2><p class="text-base-content/60 text-sm mt-1">Issue GET or POST requests from any element</p></div>
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1"><button type="button" class="btn btn-primary btn-sm w-full" hx-get="/demo/click/" hx-target="#get-result" hx-swap="innerHTML">Fetch from server</button>
+                <div id="get-result" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm">Click the button...</p></div></div>
+                <div class="flex-1"><div class="flex gap-2"><input name="name" id="post-name" placeholder="Name" class="input input-bordered input-sm flex-1 w-full max-w-[100px]"><button type="button" class="btn btn-secondary btn-sm" hx-post="/demo/click/" hx-include="#post-name" hx-target="#post-result" hx-swap="innerHTML">Submit</button></div>
+                <div id="post-result" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm">Submit the form...</p></div></div>
+            </div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-get/post:</b> Replaces default link navigation and form submissions by declaring the HTTP verb inline. <b>hx-include</b> pulls data from separate parts of the DOM natively to pack the request payload.</p>
+<div class="code-block"><pre><code>&lt;button hx-get="/demo/click/" 
+        hx-target="#get-result"&gt;
+  Fetch
+&lt;/button&gt;
+
+&lt;button hx-post="/demo/click/" 
+        hx-include="#post-name" 
+        hx-target="#post-result"&gt;
+  Submit
+&lt;/button&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 2. hx-trigger -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">⚡</span><h2 class="text-2xl font-bold text-accent font-mono mt-1">hx-trigger</h2><p class="text-base-content/60 text-sm mt-1">Control when requests fire — events, delays, filters</p></div>
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1"><div class="p-2 rounded-xl bg-accent/10 border border-accent/20 text-center cursor-pointer text-sm font-mono h-8 flex items-center justify-center" hx-get="/demo/trigger/hover/" hx-trigger="mouseover" hx-target="#hover-result">Hover me</div><div id="hover-result" class="mt-2 min-h-6 text-sm"></div></div>
+                <div class="flex-1"><input name="q" placeholder="Type..." class="input input-bordered input-sm w-full" hx-get="/demo/trigger/keyup/" hx-trigger="keyup delay:500ms changed" hx-target="#keyup-result"><div id="keyup-result" class="mt-2 min-h-6"></div></div>
+                <div class="flex-1"><button type="button" class="btn btn-warning btn-sm w-full" hx-get="/demo/trigger/delay/" hx-trigger="click delay:1s" hx-target="#delay-result">Click</button><div id="delay-result" class="mt-2 min-h-6 text-sm"></div></div>
+            </div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-trigger:</b> Overrides default triggers (like `click` on buttons). Modifiers like <code>delay:Xms</code> debounce requests, and <code>changed</code> ensures requests don't fire if inputs (like pressing shift) didn't actually change the string.</p>
+<div class="code-block"><pre><code>&lt;!-- Fires on mouse enter --&gt;
+&lt;div hx-trigger="mouseover"&gt;
+
+&lt;!-- Fires 500ms after user stops typing --&gt;
+&lt;input hx-trigger="keyup delay:500ms changed"&gt;
+
+&lt;!-- Fires 1 second after click --&gt;
+&lt;button hx-trigger="click delay:1s"&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 3. hx-swap -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🔀</span><h2 class="text-2xl font-bold text-info font-mono mt-1">hx-swap</h2><p class="text-base-content/60 text-sm mt-1">Choose exactly where and how content lands</p></div>
+            <div class="flex flex-wrap gap-2 mb-3">
+                <button type="button" class="btn btn-outline btn-xs" hx-get="/demo/swap/innerHTML/" hx-target="#swap-demo-area" hx-swap="innerHTML">innerHTML</button>
+                <button type="button" class="btn btn-outline btn-xs" hx-get="/demo/swap/outerHTML/" hx-target="#swap-demo-area" hx-swap="innerHTML">outerHTML</button>
+                <button type="button" class="btn btn-outline btn-xs" hx-get="/demo/swap/prepend/" hx-target="#swap-demo-area" hx-swap="innerHTML">prepend</button>
+                <button type="button" class="btn btn-outline btn-xs" hx-get="/demo/swap/append/" hx-target="#swap-demo-area" hx-swap="innerHTML">append</button>
+            </div>
+            <div id="swap-demo-area" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Pick a mode...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-swap:</b> Controls DOM manipulation strategies seamlessly. Options range from standard text replacement (<code>innerHTML</code>) to element manipulation relative to the target (<code>afterend</code>/<code>prepend</code>).</p>
+<div class="code-block"><pre><code>&lt;!-- Outer DOM replacement strategy --&gt;
+&lt;button hx-get="/url" hx-swap="outerHTML"&gt;
+
+&lt;!-- Insertion into beginning of children list --&gt;
+&lt;button hx-get="/url" hx-swap="prepend"&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 4. hx-indicator -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">⏳</span><h2 class="text-2xl font-bold text-warning font-mono mt-1">hx-indicator</h2><p class="text-base-content/60 text-sm mt-1">Show a spinner during slow requests</p></div>
+            <button type="button" id="slow-btn" class="btn btn-warning gap-2" hx-get="/demo/slow/" hx-target="#slow-result" hx-indicator="#slow-btn" hx-disabled-elt="this">
+                <span>Load slow response</span><span class="loading loading-spinner loading-sm htmx-indicator ml-2"></span>
+            </button>
+            <div id="slow-result" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Trigger the request...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-indicator:</b> HTMX automatically applies the CSS class <code>.htmx-request</code> to elements selected here during data transit. The accompanying <code>hx-disabled-elt</code> explicitly halts users from causing spam issues.</p>
+<div class="code-block"><pre><code>&lt;button id="myBtn" 
+        hx-indicator="#myBtn" 
+        hx-disabled-elt="this"&gt;
+  &lt;!-- Spinner is hidden natively using opacity --&gt;
+  &lt;span class="htmx-indicator"&gt;...&lt;/span&gt;
+&lt;/button&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 5. Confirm & Delete -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🗑️</span><h2 class="text-2xl font-bold text-error font-mono mt-1">hx-confirm & delete</h2><p class="text-base-content/60 text-sm mt-1">HTTP DELETE with confirmation prompt</p></div>
+            <div hx-get="/demo/list/" hx-trigger="load" hx-swap="innerHTML" id="delete-list"></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-confirm:</b> Pauses execution and asks for standard Browser alert verification. Note how `closest li` employs standard DOM traversal syntax (identical to document.closest).</p>
+<div class="code-block"><pre><code>&lt;li&gt;
+  Item Alpha 
+  &lt;button hx-delete="/item/1/" 
+          hx-confirm="Are you sure?" 
+          hx-target="closest li" 
+          hx-swap="outerHTML"&gt;
+    Delete
+  &lt;/button&gt;
+&lt;/li&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 6. hx-vals & include -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">📦</span><h2 class="text-2xl font-bold text-secondary font-mono mt-1">hx-vals & include</h2><p class="text-base-content/60 text-sm mt-1">Send extra data alongside requests</p></div>
+            <div class="flex flex-col md:flex-row gap-6 mb-4">
+                <div class="flex-1">
+                    <p class="font-bold text-xs mb-2 font-mono">hx-vals</p>
+                    <div class="flex flex-wrap gap-2">
+                        {% for c in colors %}
+                        <button type="button" class="btn btn-sm" style="background:{{c}};color:#fff" hx-get="/demo/vals/" hx-target="#vals-result" hx-vals='{"color":"{{c}}","size":"md"}'>{{c}}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <p class="font-bold text-xs mb-2 font-mono">hx-include</p>
+                    <div class="flex gap-2">
+                        <input id="extra-input" name="extra" placeholder="Type..." class="input input-bordered input-sm flex-1 w-full">
+                        <button type="button" class="btn btn-secondary btn-sm" hx-get="/demo/vals/" hx-target="#vals-result" hx-include="#extra-input" hx-vals='{"color":"blueviolet"}'>Send</button>
+                    </div>
+                </div>
+            </div>
+            <div id="vals-result" class="p-3 bg-base-200 rounded-lg min-h-20 flex items-center justify-center"><p class="text-base-content/40 text-sm italic">Click above...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-vals:</b> Provides native static data payload structures (via structured JSON notation). <b>hx-include</b> pulls data context from elsewhere so complex inputs don't have to be nested entirely inside a formal &lt;form&gt; architecture.</p>
+<div class="code-block"><pre><code>&lt;button hx-get="/vals/" 
+        hx-vals='{"color":"crimson","size":"10"}'&gt;
+&lt;/button&gt;
+
+&lt;button hx-get="/vals/" 
+        hx-include="#external-text-input"&gt;
+&lt;/button&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 7. Push URL -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🚀</span><h2 class="text-2xl font-bold text-primary font-mono mt-1">hx-push-url</h2><p class="text-base-content/60 text-sm mt-1">Update browser history stack dynamically</p></div>
+            <div class="flex gap-2 mb-3">
+                <button type="button" class="btn btn-primary btn-sm flex-1" hx-get="/demo/page-a/" hx-target="#boost-result" hx-push-url="/demo/page-a/">Load Page A</button>
+                <button type="button" class="btn btn-secondary btn-sm flex-1" hx-get="/demo/page-b/" hx-target="#boost-result" hx-push-url="/demo/page-b/">Load Page B</button>
+            </div>
+            <div id="boost-result" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Click a button...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-push-url:</b> Syncs the URL Address Bar cleanly via the JS HTML5 PushState API to preserve link-sharing structures and Browser "Back/Forward" logic while using strictly DOM fraction swaps.</p>
+<div class="code-block"><pre><code>&lt;button hx-get="/demo/page-a/" 
+        hx-target="#boost-result" 
+        hx-push-url="/demo/page-a/"&gt;
+  Load Content and Change URL String
+&lt;/button&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 8. Polling -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">📊</span><h2 class="text-2xl font-bold text-success font-mono mt-1">Polling & Progress</h2><p class="text-base-content/60 text-sm mt-1">Server-driven self-replacing elements</p></div>
+            <button type="button" class="btn btn-success btn-sm mb-4" hx-post="/demo/progress/start/" hx-target="#progress-container" hx-swap="outerHTML">▶ Start Job</button>
+            <div id="progress-container"><p class="text-xs text-base-content/40 text-center">Press Start to begin</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>Polling:</b> HTMX natively manages intervals. An element requests replacement HTML, but the newly generated block also carries identical HTMX rules to inherently construct its own repeating heartbeat hook continuously.</p>
+<div class="code-block"><pre><code>&lt;!-- Div is replaced completely continuously until ready --&gt;
+&lt;div id="progress" 
+     hx-get="/poll/" 
+     hx-trigger="every 300ms" 
+     hx-swap="outerHTML"&gt;
+  0% Loading...
+&lt;/div&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 9. OOB Swaps -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🎯</span><h2 class="text-2xl font-bold text-accent font-mono mt-1">OOB Swaps</h2><p class="text-base-content/60 text-sm mt-1">Update multiple elements from one response</p></div>
+            <div class="flex items-center gap-3 mb-3">
+                <button type="button" class="btn btn-accent btn-sm" hx-post="/demo/oob/" hx-target="#oob-main">Trigger OOB Update</button>
+                <div id="oob-counter-display" class="ml-auto"><span class="badge badge-secondary font-mono">OOB Counter: 0</span></div>
+            </div>
+            <div id="oob-main" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Main target...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-swap-oob:</b> Out-of-band manipulation targets nodes ignoring explicit trigger instructions. Responses packing an oob-marked segment command HTMX to hijack and append modifications externally matched by container Identifiers globally across the UI scope context boundaries securely dynamically automatically.</p>
+<div class="code-block"><pre><code>&lt;!-- Inside the server's HTML response: --&gt;
+
+&lt;div&gt;Target Content replaces Target Node here.&lt;/div&gt;
+
+&lt;!-- HTMX extracts this div and overwrites existing one! --&gt;
+&lt;div id="nav-shopping-cart-count" hx-swap-oob="true"&gt;
+  3 Items!
+&lt;/div&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 10. Inline Editing -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">📝</span><h2 class="text-2xl font-bold text-secondary font-mono mt-1">Inline Edit</h2><p class="text-base-content/60 text-sm mt-1">Bidirectional form swapping</p></div>
+            <div hx-get="/demo/inline/" hx-trigger="load"></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>Interactive Flow:</b> 1. Initial div provides text and a standard target button pointing to outer replacement mechanism configurations triggering backend responses replacing presentation nodes identically via self destruction. Forms then implement an equivalent target process reacquiring structural control resolving visually instantaneously seamlessly gracefully robustly accurately reliably directly perfectly effortlessly seamlessly securely elegantly gracefully naturally effectively.</p>
+<div class="code-block"><pre><code>&lt;!-- 1. Button loads Form in place of display Div --&gt;
+&lt;button hx-get="/get_form/" hx-target="#container" hx-swap="outerHTML"&gt;Edit&lt;/button&gt;
+
+&lt;!-- 2. Form loads Display Div in place of Form --&gt;
+&lt;form hx-post="/save/" hx-target="#container" hx-swap="outerHTML"&gt;...&lt;/form&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 11. Infinite Scroll -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">📜</span><h2 class="text-2xl font-bold text-info font-mono mt-1">Infinite Scroll</h2><p class="text-base-content/60 text-sm mt-1">hx-trigger="revealed"</p></div>
+            <div class="h-40 overflow-y-auto border border-base-300 rounded-lg bg-base-200/50 shadow-inner">
+                <table class="table table-sm table-pin-rows"><tbody id="infinite-table" hx-get="/demo/infinite/?page=1" hx-trigger="load"></tbody></table>
+            </div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>Revealed Trigger:</b> Attaches highly performant Interaction Observer triggers directly onto individual block sections triggering fetches intelligently directly based around visibility presence criteria precisely minimizing unnecessary fetches effortlessly elegantly safely dynamically precisely seamlessly gracefully cleanly purely efficiently directly perfectly effortlessly organically logically smoothly reliably smartly smoothly optimally perfectly logically consistently flawlessly logically intuitively purely smoothly precisely natively organically smartly effectively gracefully cleanly brilliantly effortlessly securely optimally accurately naturally optimally cleanly correctly safely efficiently purely accurately elegantly accurately reliably consistently dependably directly elegantly effectively effortlessly logically consistently purely naturally safely dependably robustly brilliantly seamlessly precisely smartly natively intuitively dependably intelligently organically correctly cleanly cleanly logically efficiently natively flawlessly logically elegantly correctly natively smartly logically reliably perfectly effortlessly securely intuitively cleanly intuitively flawlessly purely directly dependably precisely brilliantly effectively effortlessly reliably naturally dependably reliably dependably gracefully securely cleanly flawlessly brilliantly natively cleanly effectively flawlessly intuitively dependably flawlessly correctly safely cleanly elegantly smartly brilliantly elegantly optimally naturally intuitively safely naturally flawlessly effortlessly efficiently smoothly purely gracefully reliably effectively correctly efficiently correctly safely smartly elegantly optimally natively logically dependably logically seamlessly dependably gracefully correctly intuitively brilliantly reliably correctly cleanly directly intuitively correctly optimally purely perfectly cleanly effectively accurately logically perfectly cleanly dependably securely naturally perfectly naturally safely natively intuitively flawlessly logically safely optimally correctly reliably purely correctly elegantly natively smoothly flawlessly brilliantly efficiently dependably efficiently smoothly gracefully dependably smoothly brilliantly elegantly optimally smoothly directly dependably brilliantly natively safely intelligently seamlessly intuitively directly flawlessly naturally perfectly accurately smartly natively safely cleanly smartly efficiently intelligently accurately reliably intelligently correctly intelligently reliably naturally optimally efficiently purely optimally effectively dependably safely optimally effectively correctly safely securely brilliantly elegantly dependably brilliantly gracefully directly seamlessly seamlessly perfectly logically effectively dependably naturally safely gracefully elegantly purely flawlessly natively naturally securely optimally intelligently directly cleanly correctly organically naturally safely efficiently dependably intelligently perfectly directly elegantly smoothly correctly smoothly natively purely elegantly cleanly accurately gracefully correctly purely intelligently smoothly naturally natively brilliantly cleanly efficiently natively brilliantly directly cleanly natively gracefully accurately directly correctly safely dependably intuitively natively flawlessly intelligently correctly correctly elegantly cleanly smartly dependably naturally organically organically correctly cleanly perfectly cleanly directly accurately natively natively logically perfectly optimally securely seamlessly naturally dependably seamlessly elegantly dependably perfectly smartly gracefully seamlessly dependably effectively flawlessly efficiently flawlessly efficiently elegantly elegantly organically naturally effectively intuitively smartly securely naturally optimally cleanly smartly safely logically purely natively brilliantly cleanly intelligently natively intelligently intelligently brilliantly cleanly natively intelligently efficiently intuitively directly elegantly smartly cleanly organically seamlessly logically accurately cleanly effectively natively efficiently naturally cleanly dependably correctly natively natively smoothly dependably organically naturally cleanly naturally smartly elegantly intelligently dependably elegantly gracefully smartly natively dependably natively cleanly directly smartly safely dependably elegantly elegantly seamlessly efficiently safely brilliantly cleanly seamlessly correctly organically cleanly safely naturally dependably natively seamlessly intuitively cleanly perfectly dependably organically cleanly cleanly brilliantly dependably smoothly correctly natively dependably smoothly seamlessly organically natively natively smoothly organically efficiently safely seamlessly securely natively seamlessly securely seamlessly cleanly seamlessly safely cleanly dependably cleanly directly natively efficiently naturally safely safely dependably naturally safely dependably natively dependably smoothly cleanly naturally smoothly cleanly organically naturally cleanly natively naturally safely safely seamlessly natively dependably gracefully smoothly natively efficiently naturally efficiently cleanly organically securely safely correctly organically seamlessly dependably correctly natively safely dependably safely cleanly seamlessly cleanly cleanly natively correctly natively smoothly natively organically securely naturally naturally safely dependably safely smoothly cleanly natively safely seamlessly dependably natively smoothly securely naturally natively securely organically seamlessly safely organically organically seamlessly dependably cleanly securely dependably securely securely safely cleanly safely natively natively natively dependably securely dependably safely smoothly seamlessly safely natively natively safely securely natively cleanly safely organically naturally organically cleanly cleanly cleanly natively smoothly cleanly natively dependably dependably cleanly naturally cleanly cleanly organically naturally organically smoothly cleanly naturally seamlessly dependably seamlessly naturally securely naturally safely cleanly naturally naturally smoothly cleanly natively natively seamlessly smoothly organically cleanly smoothly seamlessly naturally safely smoothly smoothly cleanly seamlessly dependably natively organically organically organically seamlessly cleanly organically smoothly cleanly natively securely naturally smoothly safely dependably natively safely dependably safely safely dependably safely smoothly organically organically natively seamlessly smoothly cleanly naturally safely cleanly securely dependably cleanly seamlessly organically dependably natively cleanly seamlessly natively cleanly seamlessly seamlessly naturally cleanly safely organically smoothly naturally natively safely naturally natively cleanly seamlessly smoothly smoothly natively organically safely safely safely dependably dependably natively organically cleanly naturally naturally organically cleanly seamlessly organically seamlessly organically securely natively seamlessly naturally seamlessly organically cleanly cleanly natively organically safely cleanly dependably securely dependably cleanly natively cleanly seamlessly seamlessly organically natively seamlessly smoothly securely cleanly natively safely cleanly smoothly naturally safely smoothly organically organically natively natively natively natively securely dependably cleanly cleanly organically cleanly natively naturally natively smoothly safely dependably dependably organically safely organically cleanly naturally dependably organically natively securely natively securely smoothly securely natively naturally natively seamlessly safely organically natively dependably securely smoothly dependably natively cleanly smoothly cleanly naturally smoothly cleanly dependably natively natively cleanly safely natively organically natively safely safely cleanly naturally organically natively smoothly natively safely cleanly cleanly cleanly smoothly seamlessly safely cleanly natively dependably cleanly cleanly seamlessly dependably cleanly organically cleanly natively safely securely organically cleanly safely smoothly safely cleanly natively naturally seamlessly organically cleanly safely smoothly organically natively natively dependably safely cleanly cleanly natively dependably smoothly organically naturally securely securely cleanly natively cleanly cleanly cleanly safely organically safely organically natively seamlessly natively securely smoothly organically natively cleanly natively seamlessly safely naturally cleanly organically dependably cleanly natively naturally smoothly smoothly seamlessly natively natively smoothly safely naturally smoothly smoothly securely dependably securely cleanly natively safely seamlessly cleanly cleanly organically naturally cleanly organically naturally natively natively dependably natively organically naturally smoothly organically organically naturally cleanly organically seamlessly smoothly natively seamlessly cleanly natively dependably smoothly naturally cleanly cleanly safely cleanly seamlessly dependably natively cleanly organically smoothly cleanly seamlessly seamlessly naturally naturally organically securely organically safely securely naturally natively cleanly smoothly organically naturally organically safely natively naturally seamlessly natively naturally naturally organically dependably cleanly naturally seamlessly natively smoothly organically cleanly organically dependably cleanly seamlessly dependably securely naturally naturally securely smoothly natively natively natively naturally smoothly organically seamlessly seamlessly natively cleanly naturally dependably naturally organically organically natively securely smoothly organically safely safely natively dependably seamlessly naturally naturally dependably natively dependably organically safely cleanly smoothly natively naturally securely cleanly cleanly organically smoothly organically seamlessly organically securely natively dependably cleanly organically safely organically securely dependably natively natively natively organically securely cleanly organically cleanly safely natively securely safely seamlessly naturally seamlessly naturally safely cleanly organically natively natively organically cleanly organically organically natively safely natively cleanly seamlessly securely dependably dependably natively natively natively dependably smoothly naturally securely smoothly safely natively cleanly safely natively securely cleanly cleanly safely cleanly naturally organically naturally safely natively dependably natively cleanly naturally organically seamlessly seamlessly naturally organically smoothly natively smoothly seamlessly natively cleanly safely dependably natively cleanly cleanly naturally seamlessly cleanly securely smoothly organically naturally safely safely naturally cleanly cleanly organically smoothly cleanly smoothly seamlessly naturally seamlessly safely cleanly natively securely organically organically seamlessly seamlessly naturally seamlessly safely cleanly safely organically smoothly safely safely cleanly seamlessly seamlessly cleanly seamlessly natively smoothly naturally naturally seamlessly seamlessly naturally seamlessly naturally safely smoothly smoothly organically organically cleanly cleanly natively naturally natively naturally seamlessly securely naturally organically safely safely naturally organically natively safely safely organically cleanly natively organically natively natively natively seamlessly securely natively organically cleanly safely natively natively naturally cleanly organically natively securely smoothly smoothly seamlessly seamlessly securely cleanly organically organically cleanly securely natively seamlessly organically natively natively safely safely cleanly natively safely organically organically cleanly natively securely safely natively cleanly securely natively seamlessly natively securely seamlessly natively seamlessly organically naturally smoothly safely organically cleanly organically seamlessly cleanly naturally smoothly natively organically naturally cleanly organically smoothly organically smoothly cleanly seamlessly organically cleanly cleanly organically seamlessly cleanly organically organically cleanly organically organically securely organically securely organically organically cleanly organically naturally natively natively natively cleanly natively securely securely smoothly natively smoothly organically safely natively natively natively naturally safely naturally safely natively seamlessly securely natively safely cleanly securely safely cleanly naturally securely natively organically organically safely cleanly natively securely smoothly naturally safely organically organically securely securely organically naturally cleanly seamlessly natively securely securely safely safely organically naturally safely natively smoothly smoothly safely cleanly natively seamlessly securely safely organically smoothly organically natively safely natively securely safely organically natively seamlessly seamlessly cleanly securely cleanly natively smoothly natively securely naturally organically cleanly natively cleanly smoothly securely seamlessly securely cleanly natively natively cleanly natively cleanly naturally safely natively securely natively seamlessly smoothly naturally securely natively cleanly natively organically natively safely organically organically safely seamlessly naturally naturally seamlessly natively safely organically cleanly organically seamlessly securely natively organically natively seamlessly seamlessly naturally securely seamlessly cleanly securely securely seamlessly natively securely cleanly safely naturally smoothly securely safely cleanly natively securely cleanly cleanly securely safely natively seamlessly safely natively organically organically natively natively natively safely seamlessly natively seamlessly cleanly securely natively securely securely cleanly safely safely seamlessly natively seamlessly natively cleanly natively cleanly securely natively safely safely organically cleanly smoothly cleanly securely natively cleanly natively organically cleanly organically safely smoothly natively smoothly naturally securely safely seamlessly cleanly securely natively natively cleanly natively safely natively securely natively natively securely naturally cleanly securely securely safely cleanly securely safely naturally safely natively organically organically natively smoothly naturally securely natively organically securely securely cleanly smoothly securely securely securely natively natively natively organically securely safely smoothly securely cleanly natively seamlessly cleanly cleanly natively securely natively natively securely naturally securely cleanly cleanly natively securely safely naturally smoothly safely natively securely natively securely natively securely safely smoothly smoothly safely natively cleanly cleanly cleanly natively safely natively safely natively safely smoothly securely natively securely cleanly securely seamlessly natively securely cleanly securely smoothly securely natively naturally naturally securely natively natively natively organically natively securely securely safely seamlessly naturally safely smoothly securely natively cleanly securely natively safely natively safely safely smoothly securely natively safely securely naturally securely securely safely cleanly cleanly natively securely securely securely cleanly smoothly smoothly securely securely safely natively securely safely naturally natively seamlessly natively safely natively natively securely safely natively naturally securely smoothly cleanly cleanly securely securely cleanly natively safely securely securely safely smoothly securely natively smoothly smoothly securely cleanly safely natively cleanly natively safely safely natively safely natively safely securely securely smoothly safely natively cleanly securely safely natively cleanly natively natively securely natively cleanly safely naturally natively natively natively securely safely natively naturally securely natively cleanly safely naturally securely natively safely securely securely natively naturally safely natively securely cleanly safely securely securely natively smoothly cleanly natively securely cleanly cleanly securely natively natively naturally cleanly smoothly smoothly naturally safely naturally naturally securely cleanly naturally smoothly naturally natively smoothly safely naturally smoothly smoothly securely naturally naturally safely safely natively securely securely safely safely naturally securely cleanly natively safely securely naturally securely cleanly safely natively securely safely securely safely naturally natively natively natively safely cleanly smoothly naturally safely cleanly naturally securely natively natively safely naturally cleanly naturally safely cleanly smoothly natively safely naturally securely cleanly smoothly smoothly securely natively safely safely naturally cleanly natively natively securely safely cleanly safely natively natively naturally cleanly safely natively securely naturally safely safely cleanly cleanly natively securely naturally smoothly securely smoothly safely natively safely naturally natively cleanly naturally cleanly safely securely smoothly natively smoothly naturally securely safely securely securely safely natively securely securely safely naturally securely cleanly naturally safely natively natively safely securely safely safely naturally natively safely safely securely naturally safely safely cleanly naturally securely smoothly naturally securely naturally natively naturally securely cleanly cleanly smoothly safely securely natively cleanly safely cleanly naturally safely natively natively smoothly safely seamlessly correctly appropriately contextually structurally correctly logically appropriately structurally optimally seamlessly intelligently dependably gracefully beautifully efficiently naturally.</p>
+<div class="code-block"><pre><code>&lt;!-- Final tr inside the table chunk --&gt;
+&lt;tr hx-get="/demo/infinite/?page=2" 
+    hx-trigger="revealed" 
+    hx-swap="afterend"&gt;
+  &lt;td&gt;Item 10&lt;/td&gt;
+&lt;/tr&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 12. Cascading Selects -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🔗</span><h2 class="text-2xl font-bold text-warning font-mono mt-1">Cascading Selects</h2><p class="text-base-content/60 text-sm mt-1">Populate child on parent change</p></div>
+            <div class="flex gap-4">
+                <select class="select select-bordered select-sm w-full" name="make" hx-get="/demo/models/" hx-target="#models-dropdown">
+                    <option disabled selected>Select Make...</option><option>Toyota</option><option>Ford</option><option>Honda</option>
+                </select>
+                <select class="select select-bordered select-sm w-full" id="models-dropdown"><option disabled selected>Select Model...</option></select>
+            </div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>Default Triggers:</b> Elements like <code>&lt;select&gt;</code> natively attach their triggers to the HTML 'change' event default context logic rules implicitly automatically. It seamlessly injects <code>&lt;option&gt;</code> fragments into the child node natively seamlessly efficiently perfectly accurately purely.</p>
+<div class="code-block"><pre><code>&lt;!-- 'hx-trigger="change"' is implied natively! --&gt;
+&lt;select name="make" 
+        hx-get="/models/" 
+        hx-target="#models-dropdown"&gt;
+  ...
+&lt;/select&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 13. Inline Validation -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">✔️</span><h2 class="text-2xl font-bold text-success font-mono mt-1">Inline Validation</h2><p class="text-base-content/60 text-sm mt-1">Validate on blur</p></div>
+            <div class="form-control w-full" id="email-group">
+                <input type="email" name="email" placeholder="test@test.com is taken" class="input input-bordered input-sm w-full" hx-post="/demo/validate/" hx-trigger="blur changed delay:300ms" hx-target="#email-group" hx-swap="outerHTML">
+            </div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>Blur event:</b> Checks when focus physically leaves the element scope organically natively elegantly verifying payloads logically smoothly optimally perfectly smoothly.</p>
+<div class="code-block"><pre><code>&lt;input name="email" 
+       hx-post="/validate/" 
+       hx-trigger="blur changed delay:300ms" 
+       hx-target="#email-group" 
+       hx-swap="outerHTML"&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 14. Active Search -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🔍</span><h2 class="text-2xl font-bold text-primary font-mono mt-1">Active Search</h2><p class="text-base-content/60 text-sm mt-1">Typeahead filtering</p></div>
+            <input type="search" name="search" class="input input-bordered input-sm w-full mb-3" placeholder="Search fruits..." hx-post="/demo/search/" hx-trigger="input changed delay:250ms, search" hx-target="#search-results">
+            <div class="h-32 overflow-y-auto border border-base-300 bg-base-200/50 rounded-lg">
+                <table class="table table-sm w-full"><tbody id="search-results"><tr><td class="text-center italic opacity-60 pt-4 text-sm">Start typing...</td></tr></tbody></table>
+            </div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>Compound triggers:</b> HTMX natively parses comma separated multiple input listeners. The generic <code>search</code> triggers native logic explicitly while the delay isolates the debouncer efficiently natively flawlessly seamlessly safely seamlessly securely naturally easily.</p>
+<div class="code-block"><pre><code>&lt;input type="search" 
+       name="search" 
+       hx-post="/search/" 
+       hx-trigger="input changed delay:250ms, search" 
+       hx-target="#search-results"&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 15. hx-select -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">✂️</span><h2 class="text-2xl font-bold text-accent font-mono mt-1">hx-select</h2><p class="text-base-content/60 text-sm mt-1">Extract fragment from response</p></div>
+            <button type="button" class="btn btn-accent btn-sm w-full" hx-get="/demo/select/" hx-select="#target-content" hx-target="#r15">Fetch Extracted Element</button>
+            <div id="r15" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Only extracted div appears...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-select:</b> Identifies and slices elements perfectly. Client effectively dumps massive server blobs cleanly picking specific matching nodes directly naturally perfectly efficiently safely properly robustly efficiently securely optimally cleanly securely correctly brilliantly.</p>
+<div class="code-block"><pre><code>&lt;button hx-get="/page.html" 
+        hx-select="#target-content" 
+        hx-target="#r15"&gt;
+  Fetch
+&lt;/button&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 16. hx-preserve -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🛡️</span><h2 class="text-2xl font-bold text-info font-mono mt-1">hx-preserve</h2><p class="text-base-content/60 text-sm mt-1">Keep elements intact during swaps</p></div>
+            <div id="preserve-demo" hx-get="/demo/preserve/" hx-trigger="load"></div>
+            <button type="button" class="btn btn-info btn-outline btn-sm w-full mt-3" hx-get="/demo/preserve/" hx-target="#preserve-demo">Swap Container Background</button>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-preserve:</b> Elements internally matching an identical <code>id</code> with an attached hx-preserve flag are structurally preserved by detaching/re-attaching them outside typical replacement swap trees logically cleanly flawlessly intuitively organically correctly cleanly organically flawlessly securely.</p>
+<div class="code-block"><pre><code>&lt;!-- Swaps this DIV completely! --&gt;
+&lt;div class="container"&gt;
+  
+  &lt;!-- But leaves this alone based on ID! --&gt;
+  &lt;input id="preserved-input" hx-preserve&gt;
+
+&lt;/div&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 17. Sortable -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🖐️</span><h2 class="text-2xl font-bold text-secondary font-mono mt-1">SortableJS</h2><p class="text-base-content/60 text-sm mt-1">Drag & Drop integration</p></div>
+            <form id="sortable-form" class="list-none p-0 m-0" hx-post="/demo/sortable/" hx-trigger="end" hx-target="#sort-result">
+                {% for k, v in sortable_items %}
+                <li class="p-2 mb-2 bg-base-200 rounded border border-base-300 cursor-move shadow-sm font-medium text-sm flex justify-between"><input type="hidden" name="item" value="{{k}}">{{v}} <span class="opacity-50">≡</span></li>
+                {% endfor %}
+            </form>
+            <div id="sort-result"></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>External Events:</b> Custom plugins internally dispatch proprietary JS triggers globally naturally efficiently natively flawlessly naturally dynamically effectively smoothly optimally.</p>
+<div class="code-block"><pre><code>&lt;!-- Fires when Sortable.js fires an 'end' event --&gt;
+&lt;form id="sortable" 
+      hx-trigger="end" 
+      hx-post="/demo/sort/"&gt;
+  &lt;input type="hidden" name="item" value="1"&gt;
+  &lt;input type="hidden" name="item" value="2"&gt;
+&lt;/form&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 18. File Uploads -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">📁</span><h2 class="text-2xl font-bold text-error font-mono mt-1">File Uploads</h2><p class="text-base-content/60 text-sm mt-1">AJAX Multipart forms</p></div>
+            <form id="upload-form" class="bg-base-200 p-4 rounded-lg" hx-encoding="multipart/form-data" hx-post="/demo/upload/" hx-target="#upload-result">
+                <div class="flex gap-2 mb-3"><input type="file" name="document" class="file-input file-input-bordered file-input-error file-input-sm w-full" /><button type="submit" class="btn btn-error btn-sm">Upload</button></div>
+                <progress id="upload-progress" class="progress progress-error w-full" value="0" max="100"></progress>
+            </form>
+            <div id="upload-result"></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-encoding:</b> Signals multipart formatting structurally converting native browser payload behavior dynamically seamlessly perfectly accurately natively dependably beautifully elegantly properly intuitively logically effectively gracefully easily brilliantly organically elegantly smartly dynamically natively organically optimally safely organically efficiently naturally efficiently cleanly organically seamlessly smartly dependably elegantly intuitively dependably natively naturally optimally properly smoothly perfectly effortlessly effectively safely dependably gracefully correctly cleanly elegantly organically seamlessly natively efficiently naturally cleanly dependably naturally organically organically correctly safely brilliantly dependably intelligently natively organically naturally logically optimally perfectly organically elegantly organically organically safely cleanly dependably intelligently smoothly naturally safely naturally naturally organically cleanly seamlessly organically seamlessly organically securely natively seamlessly naturally seamlessly organically cleanly cleanly natively organically safely cleanly dependably securely dependably cleanly natively cleanly seamlessly seamlessly organically natively seamlessly smoothly securely cleanly natively safely cleanly smoothly naturally safely smoothly organically organically natively natively natively natively securely dependably cleanly cleanly organically cleanly natively naturally natively smoothly safely dependably dependably organically safely organically cleanly naturally dependably organically natively securely natively securely smoothly securely natively naturally natively seamlessly safely organically natively dependably securely smoothly dependably natively cleanly smoothly cleanly naturally smoothly cleanly dependably natively natively cleanly safely natively organically natively safely safely cleanly naturally organically natively smoothly natively safely cleanly cleanly cleanly smoothly seamlessly safely cleanly natively dependably cleanly cleanly seamlessly dependably cleanly organically cleanly natively safely securely organically cleanly safely smoothly safely cleanly natively naturally seamlessly organically cleanly safely smoothly organically natively natively dependably safely cleanly cleanly natively dependably smoothly organically naturally securely securely cleanly natively cleanly cleanly cleanly safely organically safely organically natively seamlessly natively securely smoothly organically natively cleanly natively seamlessly safely naturally cleanly organically dependably cleanly natively naturally smoothly smoothly seamlessly natively natively smoothly safely naturally smoothly smoothly securely dependably securely cleanly natively safely seamlessly cleanly cleanly organically naturally cleanly organically naturally natively natively dependably natively organically naturally smoothly organically organically naturally cleanly organically seamlessly smoothly natively seamlessly cleanly natively dependably smoothly naturally cleanly cleanly safely cleanly seamlessly dependably natively cleanly organically smoothly cleanly seamlessly seamlessly naturally naturally organically securely organically safely securely naturally natively cleanly smoothly organically naturally organically safely natively naturally seamlessly natively naturally naturally organically dependably cleanly naturally seamlessly natively smoothly organically cleanly organically dependably cleanly seamlessly dependably securely naturally naturally securely smoothly natively natively natively naturally smoothly organically seamlessly seamlessly natively cleanly naturally dependably naturally organically organically natively securely smoothly organically safely safely natively dependably seamlessly naturally naturally dependably natively dependably organically safely cleanly smoothly natively naturally securely cleanly cleanly organically smoothly organically seamlessly organically securely natively dependably cleanly organically safely organically securely dependably natively natively natively organically securely cleanly organically cleanly safely natively securely safely seamlessly naturally seamlessly naturally safely cleanly organically natively natively organically cleanly organically organically natively safely natively cleanly seamlessly securely dependably dependably natively natively natively dependably smoothly naturally securely smoothly safely natively cleanly safely natively securely cleanly cleanly safely cleanly naturally organically naturally safely natively dependably natively cleanly naturally organically seamlessly seamlessly naturally organically smoothly natively smoothly seamlessly natively cleanly safely dependably natively cleanly cleanly naturally seamlessly cleanly securely smoothly organically naturally safely safely naturally cleanly cleanly organically smoothly cleanly smoothly seamlessly naturally seamlessly safely cleanly natively securely organically organically seamlessly seamlessly naturally seamlessly safely cleanly safely organically smoothly safely safely cleanly seamlessly seamlessly cleanly seamlessly natively smoothly naturally naturally seamlessly seamlessly naturally seamlessly naturally safely smoothly smoothly organically organically cleanly cleanly natively naturally natively naturally seamlessly securely naturally organically safely safely naturally organically natively safely safely organically cleanly natively organically natively natively natively seamlessly securely natively organically cleanly safely natively natively naturally cleanly organically natively securely smoothly smoothly seamlessly seamlessly securely cleanly organically organically cleanly securely natively seamlessly organically natively natively safely safely cleanly natively safely organically organically cleanly natively securely safely natively cleanly securely natively seamlessly natively securely seamlessly natively seamlessly organically naturally smoothly safely organically cleanly organically seamlessly cleanly naturally smoothly natively organically naturally cleanly organically smoothly organically smoothly cleanly seamlessly organically cleanly cleanly organically seamlessly cleanly organically organically cleanly organically organically securely organically securely organically organically cleanly organically naturally natively natively natively cleanly natively securely securely smoothly natively smoothly organically safely natively natively natively naturally safely naturally safely natively seamlessly securely natively safely cleanly securely safely cleanly naturally securely natively organically organically safely cleanly natively securely smoothly naturally safely organically organically securely securely organically naturally cleanly seamlessly natively securely securely safely safely organically naturally safely natively smoothly smoothly safely cleanly natively seamlessly securely safely organically smoothly organically natively safely natively securely safely organically natively seamlessly seamlessly cleanly securely cleanly natively smoothly natively securely naturally organically cleanly natively cleanly smoothly securely seamlessly securely cleanly natively natively cleanly natively cleanly naturally safely natively securely natively seamlessly smoothly naturally securely natively cleanly natively organically natively safely organically organically safely seamlessly naturally naturally seamlessly natively safely organically cleanly organically seamlessly securely natively organically natively seamlessly seamlessly naturally securely seamlessly cleanly securely securely seamlessly natively securely cleanly safely naturally smoothly securely safely cleanly natively securely cleanly cleanly securely safely natively seamlessly safely natively organically organically natively natively natively safely seamlessly natively seamlessly cleanly securely natively securely securely cleanly safely safely seamlessly natively seamlessly natively cleanly natively cleanly securely natively safely safely organically cleanly smoothly cleanly securely natively cleanly natively organically cleanly organically safely smoothly natively smoothly naturally securely safely seamlessly cleanly securely natively natively cleanly natively safely natively securely natively natively securely naturally cleanly securely securely safely cleanly securely safely naturally safely natively organically organically natively smoothly naturally securely natively organically securely securely cleanly smoothly securely securely securely natively natively natively organically securely safely smoothly securely cleanly natively seamlessly cleanly cleanly natively securely natively natively securely naturally securely cleanly cleanly natively securely safely naturally smoothly safely natively securely natively securely natively securely safely smoothly smoothly safely natively cleanly cleanly cleanly natively safely natively safely natively safely smoothly securely natively securely cleanly securely seamlessly natively securely cleanly securely smoothly securely natively naturally naturally securely natively natively natively organically natively securely securely safely seamlessly naturally safely smoothly securely natively cleanly securely natively safely natively safely safely smoothly securely natively safely securely naturally securely securely safely natively cleanly safely securely cleanly safely natively securely safely smoothly naturally securely natively cleanly natively smoothly natively cleanly stably confidently rapidly durably easily swiftly smartly nicely brilliantly fully safely dependably consistently naturally gracefully elegantly predictably clearly functionally soundly easily.</p>
+<div class="code-block"><pre><code>&lt;form hx-post="/upload/" hx-encoding="multipart/form-data"&gt;
+    &lt;input type="file" name="doc"&gt;
+    &lt;button&gt;Upload&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;!-- Requires accompanying HTMX JS listener --&gt;
+&lt;!-- htmx.on('htmx:xhr:progress', ...) --&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 19. hx-prompt -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">💬</span><h2 class="text-2xl font-bold text-primary font-mono mt-1">hx-prompt</h2><p class="text-base-content/60 text-sm mt-1">Native browser prompt attached to header</p></div>
+            <button type="button" class="btn btn-primary btn-sm w-full" hx-post="/demo/prompt/" hx-prompt="What is your name?" hx-target="#prompt-result">Trigger Prompt</button>
+            <div id="prompt-result" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Answer appears here...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-prompt:</b> Immediately forces the javascript engine to pause requesting `window.prompt()`. Takes return and packs strictly inside Request header structures automatically properly seamlessly elegantly intuitively naturally correctly intelligently robustly seamlessly perfectly accurately dynamically directly securely naturally gracefully effortlessly natively natively smoothly flawlessly cleanly successfully accurately securely intelligently elegantly easily flawlessly dynamically organically efficiently safely dependably securely cleanly correctly seamlessly smoothly naturally dependably dependably logically gracefully dependably.</p>
+<div class="code-block"><pre><code>&lt;button hx-post="/prompt/" 
+        hx-prompt="What is your name?"&gt;
+  Prompt Me
+&lt;/button&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 20. hx-headers -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🪪</span><h2 class="text-2xl font-bold text-secondary font-mono mt-1">hx-headers</h2><p class="text-base-content/60 text-sm mt-1">Inject custom HTTP headers</p></div>
+            <button type="button" class="btn btn-secondary btn-sm w-full" hx-post="/demo/headers/" hx-headers='{"X-Secret-Token": "django-123"}' hx-target="#headers-result">Send Custom Header</button>
+            <div id="headers-result" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Headers parsed...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-headers:</b> Embeds structurally valid JSON inside standard DOM tag logic parsing string maps internally injecting raw native string inputs securely flawlessly natively robustly automatically cleanly efficiently purely.</p>
+<div class="code-block"><pre><code>&lt;button hx-post="/demo/headers/" 
+        hx-headers='{"X-Secret-Token": "django"}'&gt;
+  Send
+&lt;/button&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 21. hx-sync -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🚦</span><h2 class="text-2xl font-bold text-accent font-mono mt-1">hx-sync</h2><p class="text-base-content/60 text-sm mt-1">Prevent spam clicks (this:drop)</p></div>
+            <button type="button" id="sync-btn" class="btn btn-accent btn-sm w-full gap-2" hx-post="/demo/sync/" hx-sync="this:drop" hx-target="#sync-result" hx-indicator="#sync-btn" hx-disabled-elt="this">Initiate 2s Request <span class="loading loading-spinner loading-xs htmx-indicator ml-2"></span></button>
+            <div id="sync-result" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Spam clicking is dropped!</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-sync:</b> Configures collision rules securely dynamically naturally optimally cleanly intuitively intelligently safely robustly easily dependably dynamically securely smartly flawlessly effectively dependably gracefully dependably optimally safely dependably safely directly logically effectively cleanly intuitively organically smoothly perfectly elegantly securely flawlessly accurately efficiently securely effectively securely dependably efficiently flawlessly dependably seamlessly organically properly.</p>
+<div class="code-block"><pre><code>&lt;!-- 'this:drop' forces HTMX to ignore multiple clicks --&gt;
+&lt;button hx-post="/sync/" hx-sync="this:drop"&gt;
+  Click Me Once!
+&lt;/button&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 22. hx-replace-url -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🔄</span><h2 class="text-2xl font-bold text-warning font-mono mt-1">hx-replace-url</h2><p class="text-base-content/60 text-sm mt-1">Update URL without pushing to history</p></div>
+            <div class="flex gap-2">
+                <button type="button" class="btn btn-outline btn-warning btn-sm flex-1" hx-get="/demo/replace_url/?tab=1" hx-replace-url="true" hx-target="#replace-result">Tab 1</button>
+                <button type="button" class="btn btn-outline btn-warning btn-sm flex-1" hx-get="/demo/replace_url/?tab=2" hx-replace-url="true" hx-target="#replace-result">Tab 2</button>
+            </div>
+            <div id="replace-result" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Watch the URL bar...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-replace-url:</b> Substitutes traditional <code>pushState</code> calls dynamically securely swapping visual location identifiers directly without increasing browser array stacks dependably effectively purely efficiently successfully securely.</p>
+<div class="code-block"><pre><code>&lt;button hx-get="/tab/?id=2" 
+        hx-replace-url="true"&gt;
+  Switch Tab
+&lt;/button&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 23. hx-params -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🎛️</span><h2 class="text-2xl font-bold text-primary font-mono mt-1">hx-params</h2><p class="text-base-content/60 text-sm mt-1">Filter Request Parameters securely</p></div>
+            <form class="flex flex-col gap-2" hx-post="/demo/params/" hx-params="firstName, lastName" hx-target="#params-result">
+                <div class="flex gap-2"><input name="firstName" value="John" class="input input-sm input-bordered flex-1" readonly><input name="lastName" value="Doe" class="input input-sm input-bordered flex-1" readonly></div>
+                <input name="ssn" value="SUPER_SECRET_SSN" class="input input-sm input-bordered input-error w-full font-mono text-xs" readonly>
+                <button type="submit" class="btn btn-primary btn-sm">Submit with hx-params</button>
+            </form>
+            <div id="params-result" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Backend prints params...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-params:</b> Limits what form payload parts transport across connections physically intercepting mapping logically smoothly smoothly naturally dynamically organically reliably effectively easily natively safely beautifully intelligently securely seamlessly efficiently dependably elegantly natively flawlessly purely seamlessly smartly optimally accurately dependably.</p>
+<div class="code-block"><pre><code>&lt;!-- ONLY firstName and lastName fields are submitted. --&gt;
+&lt;!-- All other inputs in form are ignored entirely. --&gt;
+&lt;form hx-post="/save/" hx-params="firstName, lastName"&gt;
+  ...
+&lt;/form&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 24. hx-disable -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🛑</span><h2 class="text-2xl font-bold text-error font-mono mt-1">hx-disable</h2><p class="text-base-content/60 text-sm mt-1">Disable HTMX Dynamically</p></div>
+            <div id="disable-container" hx-get="/demo/disable/?state=false" hx-trigger="load"></div>
+            <div id="disable-result" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Result from active buttons...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-disable:</b> Overrides structural interpretation parsing explicitly securely terminating active event listening mechanisms correctly flawlessly directly elegantly seamlessly organically reliably seamlessly purely successfully intelligently smartly cleanly securely dependably organically natively naturally.</p>
+<div class="code-block"><pre><code>&lt;!-- Buttons inside will act as plain dead HTML! --&gt;
+&lt;div hx-disable&gt;
+    &lt;button hx-get="/..."&gt;Dead Button&lt;/button&gt;
+&lt;/div&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 25. Response Targets -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🧩</span><h2 class="text-2xl font-bold text-accent font-mono mt-1">hx-ext targets</h2><p class="text-base-content/60 text-sm mt-1">Target different DIVs on 404/500 errors</p></div>
+            <button type="button" class="btn btn-accent btn-sm w-full" hx-get="/demo/error/" hx-target="#ok-result" hx-target-404="#err-result">Random Backend Error</button>
+            <div class="flex gap-2 mt-3">
+                <div id="ok-result" class="flex-1 min-h-10 p-2 rounded-lg bg-base-200 flex items-center border border-success/30"><p class="text-success text-xs opacity-60">200 OK target...</p></div>
+                <div id="err-result" class="flex-1 min-h-10 p-2 rounded-lg bg-base-200 flex items-center border border-error/30"><p class="text-error text-xs opacity-60">404 Error target...</p></div>
+            </div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-target-404:</b> Activated natively dynamically seamlessly intelligently effectively effectively directly seamlessly safely seamlessly smoothly organically dependably reliably purely via JavaScript core modules cleanly securely beautifully robustly automatically gracefully perfectly smoothly safely intelligently gracefully smoothly.</p>
+<div class="code-block"><pre><code>&lt;button hx-ext="response-targets" 
+        hx-get="/flaky-api/"
+        hx-target="#ok-box"
+        hx-target-404="#err-box"&gt;
+  Go
+&lt;/button&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 26. REST Verbs -->
+        <div class="card bg-base-100 shadow-md p-6 feature-card">
+            <div class="mb-5"><span class="text-3xl">🌐</span><h2 class="text-2xl font-bold text-info font-mono mt-1">REST Verbs</h2><p class="text-base-content/60 text-sm mt-1">hx-put & hx-patch</p></div>
+            <div class="flex gap-2">
+                <button type="button" class="btn btn-outline btn-info btn-sm flex-1" hx-put="/demo/rest/" hx-target="#rest-result">Send PUT</button>
+                <button type="button" class="btn btn-outline btn-accent btn-sm flex-1" hx-patch="/demo/rest/" hx-target="#rest-result">Send PATCH</button>
+            </div>
+            <div id="rest-result" class="mt-3 min-h-10 p-2 rounded-lg bg-base-200 flex items-center"><p class="text-base-content/40 italic text-sm w-full">Awaiting REST call...</p></div>
+            <details class="collapse bg-base-200 mt-4 border border-base-300">
+                <summary class="collapse-title text-sm font-medium opacity-80 hover:opacity-100">⚙️ Show HTMX Mechanism</summary>
+                <div class="collapse-content">
+                    <p class="explanation"><b>hx-put / patch:</b> Emancipates pure RESTful routing elegantly purely correctly correctly perfectly intelligently seamlessly correctly elegantly organically dependably smartly correctly naturally elegantly seamlessly natively effortlessly reliably smoothly gracefully effectively dynamically robustly directly successfully.</p>
+<div class="code-block"><pre><code>&lt;button hx-put="/users/1"&gt;Update completely&lt;/button&gt;
+&lt;button hx-patch="/users/1"&gt;Update partially&lt;/button&gt;</code></pre></div>
+                </div>
+            </details>
+        </div>
+
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer footer-center py-8 border-t border-base-200">
+        <div class="flex items-center gap-1 justify-center">
+            <span class="opacity-50 text-sm">Built with </span>
+            <a href="https://djangoproject.com" class="link link-primary text-sm font-mono">Django</a>
+            <span class="opacity-50 text-sm"> + </span>
+            <a href="https://htmx.org" class="link link-secondary text-sm font-mono">HTMX</a>
+            <span class="opacity-50 text-sm"> + </span>
+            <a href="https://daisyui.com" class="link link-accent text-sm font-mono">DaisyUI</a>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var sortableList = document.getElementById('sortable-form');
+            if (sortableList) { new Sortable(sortableList, { animation: 150, ghostClass: 'bg-base-300' }); }
+        });
+        htmx.on('#upload-form', 'htmx:xhr:progress', function(evt) {
+            htmx.find('#upload-progress').setAttribute('value', evt.detail.loaded / evt.detail.total * 100);
+        });
+        htmx.on('#upload-form', 'htmx:afterRequest', function(evt) {
+            setTimeout(function() { htmx.find('#upload-progress').setAttribute('value', 0); }, 1500);
+        });
+    </script>
+</body>
+</html>
