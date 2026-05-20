@@ -3,6 +3,13 @@
 
 > **Prerequisite:** You have already completed the original 10-step guide and your app runs at `http://127.0.0.1:8000/`.  
 > Every section below tells you *exactly* which file to open, what to remove, and what to paste in its place.
+---
+
+## 🛑 BEFORE continuing:
+
+* DELETE database file `db.sqlite3` at the root of the project.
+* DELETE initila migration file `0001_initial.py` in the migrations folder inside the todos app folder.
+
 
 ---
 
