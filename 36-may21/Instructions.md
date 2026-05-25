@@ -1,6 +1,6 @@
 # Last Class with material
 
-## 1. Read CMs' file
+## 1. Read CMS' file
 
 ---
 
